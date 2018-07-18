@@ -18,7 +18,7 @@ class crud_j extends CI_Model {
   }
 // ------------untuk mencari data jadwal----------------
   function cari_jadwal_kar($where1,$where2,$where3,$where4){
-    $this->db->select('jadwal,kd_jdwl');
+    $this->db->select('*');
     $this->db->from('tv_jadwal');
     $this->db->where('kd_kar',$where1);
     $this->db->where('tanggal',$where2);
@@ -28,14 +28,35 @@ class crud_j extends CI_Model {
 
     return $query;
   }
+  function cari_jadwal_kar2($where2,$where3,$where4){
+    $this->db->select('*');
+    $this->db->from('tv_jadwal');
+    $this->db->where('tanggal',$where2);
+    $this->db->where('bulan',$where3);
+    $this->db->where('tahun',$where4);
+    $query=$this->db->get();
+
+    return $query;
+  }
+  function cari_jadwal_jam($kd_waktu){
+    $this->db->select('jadwal,jam');
+    $this->db->from('tb_waktu');
+    $this->db->where('kd_waktu', $kd_waktu);
+    $query=$this->db->get();
+
+    return $query;
+  }
+  function hapus_semua_jadwal(){
+    $this->db->empty_table('tv_jadwal');
+  }
 
 
-  // function cari_jumlah_kar(){
-  //   $this->db->select('COUNT(kd_kar) as total');
-  //   $this->db->from('tb_karyawan');
-  //   $query =$this->db->get();
-  //   return $query;
-  // }
+  function cari_jumlah_kar(){
+    $this->db->select('COUNT(distinct(kd_kar)) as total');
+    $this->db->from('tv_jadwal');
+    $query =$this->db->get();
+    return $query;
+  }
   // ------------untuk mencari kode karyawan----------------
   function cari_kode_kar(){
     $this->db->distinct();
@@ -85,10 +106,25 @@ class crud_j extends CI_Model {
     $query=$this->db->get();
     return $query->result();
   }
+  function tanggal_cari2($bulan,$tahun){
+    $this->db->select('distinct(tanggal) as tanggal');
+    $this->db->from('tv_jadwal');
+    $this->db->where('bulan',$bulan);
+    $this->db->where('tahun',$tahun);
+    $query=$this->db->get();
+    return $query->result();
+  }
 // ------------untuk mengedit data di tv_jadwal ----------------
   function edit_jadwal($where,$data){
+    $this->db->set($data);
     $this->db->where($where);
-    $this->db->update('tv_jadwal',$data);
+    $update=$this->db->update('tb_waktu');
+    if($update)
+    {
+    return true;
+    } else  {
+    return false;
+    }
     }
 // ------------untuk menghapus data di tv_jadwal ----------------
     function hapus_data_jadwal($where,$table){
@@ -119,6 +155,14 @@ class crud_j extends CI_Model {
     return $query;
   }
 
+  // mencari kode tb waktu
+  function cari_tbWaktu($kd_waktu){
+    $this->db->select('*');
+    $this->db->from('tb_waktu');
+    $this->db->where('kd_waktu',$kd_waktu);
+    $query=$this->db->get();
+    return $query;
+  }
 
 //   function cari_tanggal_kode($where1,$where2,$where3){
 //     $this->db->select('kd_waktu');
@@ -131,6 +175,13 @@ class crud_j extends CI_Model {
 //     return $query;
 //   }
 
+function cari_kode_jadwal2($tanggal){
+  $this->db->select('kd_waktu');
+  $this->db->from('tv_jadwal');
+  $this->db->where('tanggal',$tanggal);
+  $query=$this->db->get();
+  return $query;
+}
 
   //untuk mencari kode unik jadwal
     function cari_kode_jadwal(){
@@ -151,7 +202,26 @@ class crud_j extends CI_Model {
       $kodeJadi="KD_JAD-".$kodeMax;
       return $kodeJadi;
     }
-    //untuk mencari kode unik tb_waktu
+    //untuk mencari kode unik jadwal
+      function cari_kode_waktu(){
+        $this->db->select('RIGHT(tb_waktu.kd_waktu,4) as kode',false );
+        $this->db->order_by('kd_waktu','DESC');
+        $this->db->limit(1);
+        $query=$this->db->get('tb_waktu');//cek apakah id atau tidak
+        if ($query->num_rows()<>0) {
+          // jika kode ternyata sudah add
+          $data=$query->row();
+          $kode=intval($data->kode)+1;
+        }else {
+          // jika kode bl ada
+          $kode=1;
+        }
+
+         $kodeMax=str_pad($kode,4,"0",STR_PAD_LEFT);//angka 4 menunjukan jumlah angka digit 0
+        $kodeJadi="KD_WKT-".$kodeMax;
+        return $kodeJadi;
+      }
+    //untuk mencarfi kode unik tb_waktu
       // function cari_kode_waktu(){
       //   $this->db->select('RIGHT(tb_waktuu.kd_waktu,4) as kode',false );
       //   $this->db->order_by('kd_waktu','DESC');

@@ -126,7 +126,7 @@
 
                 }else {
                   echo "</br>";
-                  echo $jadwal[$i][$j];
+                  	echo $jadwal[$i][$j]."</br>".$jadwal_jam[$i][$j];
                   echo "</br>";
                 } ?></td>
 

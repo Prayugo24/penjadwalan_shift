@@ -12,7 +12,7 @@
 				<!-- body modal -->
 				<div class="modal-body">
           <div class="content">
-              <form action="<?php echo base_url().'index.php/Admin/crud/downloadExcel';?>" method="post">
+              <form action="<?php echo base_url().'Admin/printV/printPreview';?>" method="post" target="_blank">
 
                   <div class="row">
                       <div class="col-md-6">
@@ -41,7 +41,7 @@
                       <div class="col-md-4">
                           <div class="form-group">
                               <label>Tanggal Mulai</label>
-															<select class="form-control" name="tgl_awl" id="tgl_awl" disabled="">
+															<select class="form-control" name="tgl_awl" id="tagl_awll" disabled="">
 																 <option value=""></option>
 															</select>
                           </div>
@@ -50,7 +50,7 @@
                       <div class="col-md-4">
                           <div class="form-group">
                               <label>Tanggal Akhir</label>
-															<select class="form-control" name="tgl_akhr" id="tgl_akhr" disabled="">
+															<select class="form-control" name="tgl_akhr" id="tagl_akhrr" disabled="">
 																<option value=""></option>
 															</select>
                           </div>
@@ -60,8 +60,8 @@
                           <div class="form-group">
                               <label>Export Data</label>
 															<select class="form-control" name="export_data" id="export_data" disabled>
-																<option value="Excel">Excel</option>
 																<option value="PDF">PDF</option>
+																<option value="Excel">PDF</option>
 															</select>
                           </div>
                       </div>
@@ -69,7 +69,7 @@
 									<div class="row">
 										<div class="col-md-12">
 											<div class="text-center">
-													<button type="submit" class="btn btn-success btn-fill btn-wd">Export Data</button>
+													<button type="submit" class="btn btn-success btn-fill btn-wd"  >Export Data</button>
 											</div>
 										</div>
 									</div>
@@ -84,3 +84,6 @@
 			</div>
 		</div>
 	</div>
+	<script type="text/javascript">
+
+	</script>

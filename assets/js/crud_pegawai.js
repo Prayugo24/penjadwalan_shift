@@ -3,7 +3,7 @@
   function modal_edit_pegawai(kd_kar){
     // untuk menampung isi data dari kdkar
     var datam={"kd_karya":kd_kar};
-    var base_url2='/website/kp/codeigneter/index.php/Admin/crud/';
+    var base_url2='/kp/codeigneter/index.php/Admin/crud/';
 
 
     // ajax
@@ -22,7 +22,7 @@
       },
       error:function(){
           // alert("something went wrong"+datam).console.error();
-          swal ( "Oops" ,  "Something went wrong!" ,  "error" )
+          swal ( "Oops" ,  "Something went wrong!" ,  "error" );
       }
 
     });
@@ -36,7 +36,7 @@
   function Swall_Delete(kd_kar){
   //  var kd_kary=kd_kar;
     // alert('error hapus'+kd_kary);
-    var base_url2='/website/kp/codeigneter/index.php/Admin/crud/';
+    var base_url2='/kp/codeigneter/index.php/Admin/crud/';
   swal({
     title: "Anda Yakin?",
     text: "Data Yang Sudah Terhapus Tidak Bisa Dikembalikan Lagi!",
@@ -69,3 +69,5 @@
     }
   });
   }
+
+  

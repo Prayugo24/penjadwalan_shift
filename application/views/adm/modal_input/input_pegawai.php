@@ -44,8 +44,45 @@
                           </div>
                       </div>
                   </div>
+									<div class="row">
+                      <div class="col-md-4">
+                          <div class="form-group">
+                              <label>Status Perkawinan</label>
+                              <select class="form-control" name="stts_prkwnan" required>
+                                <option>Kawin</option>
+                                <option>Belum Kawin</option>
+																<option>Duda</option>
+																<option>Janda</option>
+                              </select>
+                          </div>
+                      </div>
+                      <div class="col-md-8">
+                          <div class="form-group">
+                              <label>Alamat</label>
+                              <textarea name="alamat" required rows="8" class="form-control border-input" cols="80"></textarea>
+                          </div>
+                      </div>
+                  </div>
+									<div class="row">
+                      <div class="col-md-4">
+                          <div class="form-group">
+                              <label>Tanggal lahir</label>
+                              <input required type="date" name="tgl_lhr" value="" class="form-control border-input">
+                          </div>
+                      </div>
+                      <div class="col-md-8">
+                          <div class="form-group">
+                              <label>Status Kerja</label>
+															<select class="form-control" name="stts_kerja" required>
+                                <option>Kontrak</option>
+                                <option>Tetap</option>
+																<option>Training</option>
+                              </select>
+                          </div>
+                      </div>
+                  </div>
 									<!-- status -->
-									<input type="hidden" name="status" value="Actif">
+									<input type="hidden" name="status" value="Active">
                   <!-- <div class="row">
                       <div class="col-md-12">
                           <div class="form-group">

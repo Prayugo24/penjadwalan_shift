@@ -23,7 +23,7 @@ class dashboard extends CI_Controller {
 		// ceksession panah menu
 		$tahun= Date("Y");
 		$bulan= Date("n");
-		
+
 	$this->cek_session->cek_session_dasboard();
 	// untuk menyesuaikan waktu zona indonesia
 	date_default_timezone_set('Asia/Jakarta');
@@ -151,11 +151,17 @@ class dashboard extends CI_Controller {
 	$jadwal_pgw=array();
 	for ($i=0; $i <$jum_kd_kar ; $i++) {
 		for ($j=0; $j <$jum_tabl_tgl ; $j++) {
-			$jadwal=$this->crud_j->cari_jadwal_kar($kd_kary[$i],$tanggal[$j],$bulanList[$bulan],$tahun)->result();
-			foreach ($jadwal as $jadwl_pgw) {
+			// untuk mendapatkan kde tab jam di tab jadwal
+			$kd_jadwal=$this->crud_j->cari_jadwal_kar($kd_kary[$i],$tanggal[$j],$bulanList[$bulan],$tahun)->result();
+			foreach ($kd_jadwal as $jadwl_pgw) {
+				$kdjad[$i][$j]=$jadwl_pgw->kd_waktu;
 
-				$jadwal_pgw[$i][$j]=$jadwl_pgw->jadwal;
-
+			}
+			// mencari jadwal sesuai kode yang di cari di tab waktu
+			$kdjadwal_jam=$this->crud_j->cari_jadwal_jam($kdjad[$i][$j])->result();
+			foreach ($kdjadwal_jam as $kdjadwal_jam) {
+				$jadwal_pgw[$i][$j]=$kdjadwal_jam->jadwal;
+				$jadwal_jam[$i][$j]=$kdjadwal_jam->jam;
 			}
 		}
 	}
@@ -206,6 +212,7 @@ class dashboard extends CI_Controller {
 	$data['nama_hari']=$data_hari;
 	$data['jum_jad']=$jum_tgl;
 	$data['jadwal']=$jadwal_pgw;
+	$data['jadwal_jam']=$jadwal_jam;
 	$data['bulan']=$bulanList[$bulan];
 	$data['tahun']=$tahun;
 	$data['jum_row_tgl']=$jum_tabl_tgl;
@@ -279,68 +286,74 @@ class dashboard extends CI_Controller {
 			'Fri' => 'Jumat',
 			'Sat' => 'Sabtu'
 		);
+
 		$tgl_hari_ini=Date("j");
 		$tgl_terakhir=Date("t");
+		// --------------------------------------------------------------------------
+	 // mencari kode tanggal pada tabel waktu
+		$tahun= Date("Y");
+		$bln_skrg= Date("n");
+		$bulanList=array(
+				"1"=>"januari",
+				"2"=>"Februari",
+				"3"=>"Maret",
+				"4"=>"April",
+				"5"=>"Mei",
+				"6"=>"Juni",
+				"7"=>"Juli",
+				"8"=>"Agustus",
+				"9"=>"September",
+				"10"=>"Oktober",
+				"11"=>"November",
+				"12"=>"Desember",
+			);
+
 		$tgl=0;
 		$hr=1;
-		for ($i=$tgl_hari_ini; $i<=$tgl_terakhir ; $i++) {
-		$tanggal[$tgl++]=$i	;
+		$input_bulan=array();
+		for ($taggl=$tgl_hari_ini; $taggl<=$tgl_terakhir ; $taggl++) {
+		$tanggal[$tgl++]=$taggl	;
     // menentukan jumlah hari pada tgl sekarang sampai tanggal terakhir
 		$jml_hri=$hr++;
 		}
+
 		$jum_tabl_tgl=$jml_hri;
-		if ($jum_tabl_tgl>7) {
+		// untuk membatasi nilai ketika tanggal lebih dari 7 lengthnya
+		if ($jum_tabl_tgl>=7) {
 			$jum_tabl_tgl=7;
+				$input_bulan[0]=$bulanList[$bln_skrg];
 		}elseif ($jum_tabl_tgl<7) {
-			$jum_tabl_tgl=$jml_hri;
+			// jika tanggal menjelang akhir maka akan menampilkan tnggal muda
+			$jum_tabl_tgl=7;
+			$jml_hri=7;
+			$tgl_ahr_bln_dpn=$tgl_terakhir+1;
+			for ($taggl=1; $taggl<=$tgl_ahr_bln_dpn; $taggl++) {
+				$tanggal[$tgl++]=$taggl;
+			}
+			for ($i=0; $i <2 ; $i++) {
+				$input_bulan[$i]=$bulanList[$bln_skrg+$i];
+			}
+
 		}elseif (empty($jum_tabl_tgl)) {
 			$jum_tabl_tgl=1;
 		}
 
     // untuk mencari nama hari di tampung di data_hari
 		for($i=0;$i<$jml_hri;$i++){
-			$time[$i] = mktime(0, 0, 0, date("m"), date("d")+$i,  date("Y"));
+			if ($jum_tabl_tgl<7) {
+				$time[$i] = mktime(0, 0, 0, date("m")+1, date("d")+$i,  date("Y"));
+	 		 $hari[$i]=date("D", $time[$i]);
+			 $data_hari[$i]=$dayList[$hari[$i]];
+		 }elseif ($jum_tabl_tgl>=7) {
+			 $time[$i] = mktime(0, 0, 0, date("m"), date("d")+$i,  date("Y"));
  		 $hari[$i]=date("D", $time[$i]);
-		 $data_hari[$i]=$dayList[$hari[$i]];
+ 		 $data_hari[$i]=$dayList[$hari[$i]];
+		 }
+
 		}
-// --------------------------------------------------------------------------
-    // mencari kode tanggal pada tabel waktu
-		$tahun= Date("Y");
-		$bulan= Date("n");
-		$bulanList=array(
-			"1"=>"januari",
-			"2"=>"Februari",
-			"3"=>"Maret",
-			"4"=>"April",
-			"5"=>"Mei",
-			"6"=>"Juni",
-			"7"=>"Juli",
-			"8"=>"Agustus",
-			"9"=>"September",
-			"10"=>"Oktober",
-			"11"=>"November",
-			"12"=>"Desember",
-		);
+
 		$kod=0;
 		$jum_jad=0;
-
-		  // mencari kode tanggal pada tabel waktu
-	// 		$kde_tgl=array();
-	// 	for ($i=0; $i<7 ; $i++) {
-	// 	$kode_tgl=($this->crud_j->cari_tanggal_kode($tanggal[$i],$bulanList[$bulan],$tahun)->result());
-	// 	foreach ($kode_tgl as $kd_tgl) {
-	// 		$kde_tgl[$i]=$kd_tgl->kd_waktu;
-	// 		if(empty($kde_tgl[$i])){
-	// 		$jum_jad=0;
-	// 	}elseif (count($kde_tgl[$i])>7) {
-	// 		$jum_jad=7;
-	// 	}else {
-	// 		$jum_jad=count($kde_tgl);
-	// 	}
-	// 	}
-	// }
-	// print_r($kde_tgl);
-    // untuk membatasi jumlah jadwal yang tampil kekiri
 
 
   // ----------------------------------------------------------
@@ -375,7 +388,7 @@ class dashboard extends CI_Controller {
 
     // mencari jadwal karyawan
 		$jum_tgl=0;
-		$jml_tgl=$this->crud_j->cari_jml_tanggal($bulanList[$bulan],$tahun)->result();
+		$jml_tgl=$this->crud_j->cari_jml_tanggal($bulanList[$bln_skrg],$tahun)->result();
 		foreach ($jml_tgl as $jml) {
 			$jum_tanggal=$jml->jml_tanggal;
 		}
@@ -390,47 +403,29 @@ class dashboard extends CI_Controller {
 
 		for ($i=0; $i <$jum_kd_kar ; $i++) {
 			for ($j=0; $j <$jum_tabl_tgl ; $j++) {
-				$jadwal=$this->crud_j->cari_jadwal_kar($kd_kary[$i],$tanggal[$j],$bulanList[$bulan],$tahun)->result();
-				foreach ($jadwal as $jadwl_pgw) {
-					$jadwal_pgw[$i][$j]=$jadwl_pgw->jadwal;
+				// untuk mendapatkan kde tab jam di tab jadwal
+				$kd_jadwal=$this->crud_j->cari_jadwal_kar($kd_kary[$i],$tanggal[$j],$bulanList[$bln_skrg],$tahun)->result();
+				foreach ($kd_jadwal as $jadwl_pgw) {
+					$kdjad[$i][$j]=$jadwl_pgw->kd_waktu;
 
+				}
+				// mencari jadwal sesuai kode yang di cari di tab waktu
+				$kdjadwal_jam=$this->crud_j->cari_jadwal_jam($kdjad[$i][$j])->result();
+				foreach ($kdjadwal_jam as $kdjadwal_jam) {
+					$jadwal_pgw[$i][$j]=$kdjadwal_jam->jadwal;
+					$jadwal_jam[$i][$j]=$kdjadwal_jam->jam;
 				}
 			}
 		}
-		if (empty($jadwal_pgw)) {
+		if (empty($jadwal_pgw)||empty($jadwal_jam)) {
 			$jadwal_pgw="-";
+			$jadwal_jam="-";
 		}
-		//  print_r($jadwal_pgw);
-		//  for ($i=0; $i <$jum_kd_kar ; $i++) {
- 		// 	for ($j=0; $j <$jum_tanggal ; $j++) {
-		// 		if (empty($jadwal_pgw[$i][$j])) {
-    //
-		// 		}else {
-		// 			echo "</br>";
-		// 			echo $jadwal_pgw[$i][$j];
-		// 			echo "</br>";
-		// 		}
-    //
- 		// 	}
- 		// }
-		// 	echo "</br>";
-		// 	print_r($kd_kary);
+			$total_kary=$this->crud_s->cari_jumlah_kar()->result();
+			foreach ($total_kary as $total) {
+				$jum_tot_kary=$total->total;
+			}
 
-		// for ($i=0; $i <3 ; $i++) {
-		// 	echo $kde_tgl[$i];
-		// 	echo "</br>";
-		// 	echo $kd_kary[$i];
-		// 	echo "</br>";
-		// }
-
-
-
-
-
-		  //echo $jum_jad;
-		 //  echo "</br>";
-			// echo $jum_jad;
-		// print_r($kde_tgl);
 
     // --------------------------------kusus CRUD--------------------
 
@@ -445,7 +440,8 @@ class dashboard extends CI_Controller {
 		$data['nama_hari']=$data_hari;
 		$data['jum_jad']=$jum_tgl;
 		$data['jadwal']=$jadwal_pgw;
-		$data['bulan']=$bulanList[$bulan];
+		$data['jadwal_jam']=$jadwal_jam;
+		$data['bulan']=$input_bulan;
 		$data['tahun']=$tahun;
 		$data['jum_row_tgl']=$jum_tabl_tgl;
     // -------------pengiriman data crud----------------
@@ -456,8 +452,10 @@ class dashboard extends CI_Controller {
 		$data['kd_karya']=$kd_karyaa;
 		$data['tgl_awl']=$tgl_hari_ini;
 		$data{'tgl_akhr'}=$tgl_terakhir;
-		$data['bln_skrg']=$bulanList[$bulan];
-		$data['thn_skrg']=$tahun;
+		$data['jum_kary']=$jum_tot_kary;
+		$data['tgl_akhr_dpn']=$tgl_ahr_bln_dpn;
+		$data['bln_skrg']=$bulanList[$bln_skrg];
+
 		$data['cari_tahun']=$this->crud_j->cari_tahun()->result();
 
 		//$data['cari_bulan']=$this->crud_j->cari_bulan()->result();
@@ -465,12 +463,16 @@ class dashboard extends CI_Controller {
 		// untuk menampilkan halaman\
     $this->load->view('adm/nav_content/header');
    	$this->load->view('adm/content/data_jadwal',$data);
+
 		$this->load->view('adm/nav_content/footer');
 		$this->load->view('adm/modal_input/input_jadwal',$data);
 		$this->load->view('adm/modal_input/edit_jadwal',$data);
+		$this->load->view('adm/modal_input/edit_all_jadwal',$data);
 		$this->load->view('adm/modal_input/hapus_jadwal',$data);
 		$this->load->view('adm/modal_input/modal_info_jdwl');
 		$this->load->view('adm/modal_input/input_cetak_jadwal',$data);
+
+
 
 
 		// untuk mengecek pesan konfirmasi edit pegawai
@@ -498,6 +500,13 @@ class dashboard extends CI_Controller {
 				}elseif($this->session->userdata('hapus_jadwal')=='berhasil') {
 					$this->load->view('adm/modal_input/sweet-alert-hapus');
 					$this->session->unset_userdata('hapus_jadwal');
+				}
+				if ($this->session->userdata('empty_jadwal')=='gagal') {
+					$this->load->view('adm/modal_input/sweet-alert-jadwal-empty');
+					$this->session->unset_userdata('empty_jadwal');
+				}elseif($this->session->userdata('empty_jadwal')=='berhasil') {
+					$this->load->view('adm/modal_input/sweet-alert-thanks');
+					$this->session->unset_userdata('empty_jadwal');
 				}
 
 	}

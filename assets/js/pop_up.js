@@ -24,7 +24,7 @@ function Swall_Delete(productId){
       return new Promise(function(resolve) {
 
          $.ajax({
-          url: '/website/kp/codeigneter/index.php/Admin/crud/hapus_pegawai',
+          url: '/kp/codeigneter/index.php/Admin/crud/hapus_pegawai',
           type: 'POST',
             data: 'kd_pegawai='+productId,
             success:function(data){
@@ -44,6 +44,6 @@ function Swall_Delete(productId){
 }
 
 function Swall_gagal(){
-  
+
 
 }

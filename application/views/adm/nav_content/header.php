@@ -32,8 +32,10 @@
 
     <!--  Fonts and icons     -->
     <link href="http://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">
-    <link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.getoogleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+
     <link href=<?php echo base_url("assets/css/themify-icons.css");?> rel="stylesheet">
+		
 
 </head>
 <body>
@@ -72,7 +74,7 @@
                         <p>Jadwal Pegawai</p>
                     </a>
                 </li>
-                
+
 
                 <li class="<?php echo $this->session->userdata('class4');?>">
                     <a href="<?php echo base_url().'index.php/nex_page/setting';?>">

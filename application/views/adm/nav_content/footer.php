@@ -13,8 +13,12 @@
 </div>
 </div>
 </body>
+
     <!--   Core JS Files   -->
+
     <script src=<?php echo base_url("assets/js/jquery-1.10.2.js");?> type="text/javascript"></script>
+
+
     <!-- untuk modal crud pegawai-->
     <script src=<?php echo base_url("assets/js/crud_pegawai.js");?> type="text/javascript"></script>
     <!-- untuk pencarian tabel -->
@@ -36,10 +40,13 @@
 
     <!-- edit jadwal -->
     <script src="<?php echo base_url("assets/js/edit_jadwal.js"); ?>"></script>
+    <script src="<?php echo base_url("assets/js/edit_all_jadwal.js"); ?>"></script>
     <!-- hapus jadwal -->
-    <script src="<?php echo base_url("assets/js/hapus_jadwal.js"); ?>"></script>
+    <script src="<?php echo base_url("assets/js/hapus_jadwal.js"); ?>"  type="text/javascript"></script>
     <!-- cetak jadwal -->
     <script src="<?php echo base_url("assets/js/cetak_jadwal.js"); ?>"></script>
+
+    <script src="<?php echo base_url("assets/js/tambah_jadwal.js"); ?>" charset="utf-8"></script>
     <!--  Google Maps Plugin    -->
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>
 

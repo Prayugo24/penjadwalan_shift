@@ -78,7 +78,7 @@
 
                       <div class="col-md-4">
                           <div class="form-group">
-                              <label>Tanggal Akhir</label>
+                              <label>Tanggal Akhir </label>
 															<select class="form-control" name="tgl_akhr">
 																<?php for($i=$tgl_awl;$i<=$tgl_akhr;$i++){ ?>
 																<option value="<?php echo $i;?>"><?php echo $i; ?></option>

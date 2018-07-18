@@ -31,14 +31,21 @@ class crud extends CI_Controller {
       $jenis_kelamin=$this->input->post('jns');
       $no_hp=$this->input->post('no_hp');
       $status=$this->input->post('status');
-
+			$stts_prkwn=$this->input->post('stts_prkwnan');
+			$alamat=$this->input->post('alamat');
+			$tgl_lhr=$this->input->post('tgl_lhr');
+			$stts_kerja=$this->input->post('stts_kerja');
       // untuk memasukan ke tabel database
       $data=array(
-        'kd_kar'=>$kode_karyawan,
+      'kd_kar'=>$kode_karyawan,
       'nam_kar'=>$nama_karyawan,
-    'jns_kel'=>$jenis_kelamin,
-  'no_hp'=>$no_hp,
-'status'=>$status);
+    	'jns_kel'=>$jenis_kelamin,
+  		'no_hp'=>$no_hp,
+			'status'=>$status,
+			'alamat'=>$alamat,
+			'status_kerja'=>$stts_kerja,
+			'tgl_lahir'=>$tgl_lhr,
+			'status_perkawinan'=>$stts_prkwn);
 
 // untuk mengirim data ke dalam database agar bisa disimpan
 $this->crud_m->input_data($data,'tb_karyawan');
@@ -66,7 +73,10 @@ function edit_pegawai(){
 		$jenis_kelamin=$this->input->post('jns');
 		$no_hp=$this->input->post('no_hp');
 		$status=$this->input->post('status');
-
+		$stts_prkwn=$this->input->post('stts_prkwnan');
+		$alamat=$this->input->post('alamat');
+		$tgl_lhr=$this->input->post('tgl_lhr');
+		$stts_kerja=$this->input->post('stts_kerja');
 
 
 		//untuk memasukan ke tabel database
@@ -74,7 +84,11 @@ function edit_pegawai(){
 		'nam_kar'=>$nama_karyawan,
 		'jns_kel'=>$jenis_kelamin,
 		'no_hp'=>$no_hp,
-		'status'=>$status);
+		'status'=>$status,
+		'alamat'=>$alamat,
+		'status_kerja'=>$stts_kerja,
+		'tgl_lahir'=>$tgl_lhr,
+		'status_perkawinan'=>$stts_prkwn);
 		//menampung kd kaaryawan
 		$where=array(
 			'kd_kar'=>$kode_karyawan
@@ -123,164 +137,323 @@ function edit_pegawai(){
 
   // --------------------------------untuk penjadwalan--------------
 	function tambah_jadwal(){
-
-		$kd_karyawan=$this->input->post('kd_kar');
-
-		$kategori_jdwl=$this->input->post('jns_jdwl');
 		$bulan=$this->input->post('bulan');
 		$tahun=$this->input->post('tahun');
 		$tgl_awl=$this->input->post('tgl_awl');
 		$tgl_akhir=$this->input->post('tgl_akhr');
-
+		$total_kary=$this->crud_s->cari_jumlah_kar()->result();
 
 		if($tgl_awl>$tgl_akhir){
 			$this->session->set_userdata('tgl_jdwl','gagal');
 			redirect('nex_page/jadwal');
-		}else{
-			$jum=1;
-			$tgl=0;
-			for ($i=$tgl_awl; $i <=$tgl_akhir ; $i++) {
-				$jum_jadwl=$jum++;
-				$tanggal[$tgl++]=$i;
-			}
+		}else {
 
-			if($kategori_jdwl=="jdwl-1"){
-				$ktgri_jdwl=array("Pagi","Lembur","Siang","Pagi","Libur","Pagi","Siang","Siang");
-			}elseif ($kategori_jdwl=="jdwl-2") {
-				$ktgri_jdwl=array("Lembur","Siang","Pagi","Libur","Pagi","Siang","Siang","Pagi");
-			}elseif ($kategori_jdwl=="jdwl-3") {
-				$ktgri_jdwl=array("Siang","Pagi","Libur","Pagi","Siang","Siang","Pagi","Lembur");
-			}elseif ($kategori_jdwl=="jdwl-4") {
-				$ktgri_jdwl=array("Pagi","Libur","Pagi","Siang","Siang","Pagi","Lembur","Siang");
-			}elseif ($kategori_jdwl=="jdwl-5") {
-				$ktgri_jdwl=array("Libur","Pagi","Siang","Siang","Pagi","Lembur","Siang","Pagi");
-			}elseif ($kategori_jdwl=="jdwl-6") {
-				$ktgri_jdwl=array("Pagi","Siang","Siang","Pagi","Lembur","Siang","Pagi","Libur");
-			}elseif ($kategori_jdwl=="jdwl-7") {
-				$ktgri_jdwl=array("Siang","Siang","Pagi","Lembur","Siang","Pagi","Libur","Pagi");
-			}elseif ($kategori_jdwl=="jdwl-8") {
-				$ktgri_jdwl=array("Siang","Pagi","Lembur","Siang","Pagi","Libur","Pagi","Siang");
-			}
+		$cek_inptan=0;
+		foreach ($total_kary as $total) {
+			$jum_tot_kary=$total->total;
+		}
+		$jum=1;
+		$tgl=0;
+		$cek=0;
 
 
-			$h=0;
-			$j=0;
-			for ($t=0; $t <$jum_jadwl ; $t++) {
-        // untuk mengecek data yang di masukan sdh ada atau belum
-				$cek_waktu[$t]=$this->crud_j->cekWaktu($tanggal[$t],$bulan,$tahun,$kd_karyawan);
+		$jdwl_name=0;
+		for ($i=$tgl_awl; $i <=$tgl_akhir ; $i++) {
+			$jum_jadwl=$jum++;
+			$tanggal[$tgl++]=$i;
+		}
+
+		for ($i=0; $i <$jum_tot_kary ; $i++) {
+
+			$kd_karyawan[$i]=$this->input->post('nama_karya-'.$i);
+
+		}
+		// untuk memfilter data array yang kosong kemudian dicek unique data yang kembar akan di hilangkan
+				$filter=array_filter($kd_karyawan);
+			if(count(array_unique($filter))<count($filter)){
+				$this->session->set_userdata('cekWaktu','gagal');
+				redirect('nex_page/jadwal');
 			}
-			for ($i=0; $i <$jum_jadwl ; $i++) {
-				// jika sudah ada maka akan kembali ke page jadwal dan gagal
-				if ($cek_waktu[$i]) {
+		else {
+
+			for ($i=0; $i <$jum_tot_kary ; $i++) {
+			if(!empty($kd_karyawan[$i])){
+				$jdwl_row=0;
+			for ($j=0; $j <$jum_jadwl ; $j++) {
+				$jdwl_name=$jdwl_row++;
+				if ($jdwl_name>6) {
+					$jdwl_row=0;
+						$jdwl_name=0;
+				}
+				$jadwal_karyawan[$i][$j]=$this->input->post("jadwl-A-".$i."-".$jdwl_name);
+					// untuk mencari kode jadwal dan kde waktu
+					if($jadwal_karyawan[$i][$j]=="Pagi"){
+						$jam_jdwl="06:00-16:00";
+					}elseif($jadwal_karyawan[$i][$j]=="Lembur"){
+						$jam_jdwl="16:00-06:00";
+					}elseif($jadwal_karyawan[$i][$j]=="Siang"){
+						$jam_jdwl="14:00-24:00";
+					}elseif($jadwal_karyawan[$i][$j]=="Libur"){
+						$jam_jdwl="--:--";
+					}
+				$kd_jadwal=$this->crud_j->cari_kode_jadwal();
+				$kd_waktu=$this->crud_j->cari_kode_waktu();
+				for ($t=0; $t <$jum_jadwl ; $t++) {
+					// untuk mengecek data yang di masukan sdh ada atau belum
+					$cek_waktu[$t]=$this->crud_j->cekWaktu($tanggal[$t],$bulan,$tahun,$kd_karyawan[$i]);
+				}
+				if ($cek_waktu[$j]) {
 					 $this->session->set_userdata('cekWaktu','gagal');
 					 redirect('nex_page/jadwal');
 
-				}
-		        // jika belum ada maka akan di eksekusi dan berhasil
-				else {
-            // untuk mencari kode jadwal dan kde waktu
-					$kd_jadwal=$this->crud_j->cari_kode_jadwal();
-					//$kd_waktu=$this->crud_j->cari_kode_waktu();
-					$j=$h++;
-          // jika isi ktgri array jadwal bernilai lbh dri 7 maka akan kembali ke 0
-					if ($j>7) {
-						$j=0;
-						$h=0;
-					}
-					// $data_waktu[$i]=array(
-		      //   		'kd_waktu'=>$kd_waktu,
-		      // 			'tanggal'=>$tanggal[$i],
-		    	// 			'bulan'=>$bulan,
-		  		// 			'tahun'=>$tahun,
-					// 			'kd_kar'=>$kd_karyawan
-					// 			);
-
-					$data_jadwal[$i]=array(
+				}else {
+					$data_jadwal[$j]=array(
 			       		'kd_jdwl'=>$kd_jadwal,
-			     			'kd_kar'=>$kd_karyawan,
-			  				'jadwal'=>$ktgri_jdwl[$j],
-								'tanggal'=>$tanggal[$i],
+			     			'kd_kar'=>$kd_karyawan[$i],
+								'tanggal'=>$tanggal[$j],
 		    				'bulan'=>$bulan,
-		  					'tahun'=>$tahun
-
+		  					'tahun'=>$tahun,
+								'kd_waktu'=>$kd_waktu
 								);
+								$data_jam[$j]=array(
+									'kd_waktu'=>$kd_waktu,
+								'jadwal'=>$jadwal_karyawan[$i][$j],
+								'jam'=>$jam_jdwl
+							);
 								//  $this->crud_j->input_data($data_waktu[$i],'tb_waktuu');
-								  $this->crud_j->input_data($data_jadwal[$i],'tv_jadwal');
-								}
+								$this->crud_j->input_data($data_jam[$j],'tb_waktu');
+								  $this->crud_j->input_data($data_jadwal[$j],'tv_jadwal');
+									$cek_inptan=1;
+
+				}
 			}
+		}
+		}
+		}
+
+		if ($cek_inptan==0) {
+			$this->session->set_userdata('cekWaktu','gagal');
+			redirect('nex_page/jadwal');
+		}else {
+			echo count(array_unique($kd_karyawan));
 			 $this->session->set_userdata('cekWaktu','berhasil');
 			 redirect('nex_page/jadwal');
+		}
 
 
 		}
+
+
 	}
+	function edit_all_jadwal(){
+		$bulan=$this->input->post('bulan');
+		$tahun=$this->input->post('tahun');
+		$tgl_awl=$this->input->post('tgl_awl');
+		$tgl_akhir=$this->input->post('tgl_akhr');
+		$total_kary=$this->crud_j->cari_jumlah_kar()->result();
+
+		if(empty($bulan)||empty($tahun)||empty($tgl_awl)||empty($tgl_akhir)){
+			$this->session->set_userdata('tgl_jdwl','gagal');
+			redirect('nex_page/jadwal');
+		}elseif($tgl_awl>$tgl_akhir){
+			$this->session->set_userdata('tgl_jdwl','gagal');
+			redirect('nex_page/jadwal');
+		}else {
+
+		$cek_inptan=0;
+		foreach ($total_kary as $total) {
+			$jum_tot_kary=$total->total;
+		}
+		$jum=1;
+		$tgl=0;
+		$cek=0;
+
+
+		$jdwl_name=0;
+		for ($i=$tgl_awl; $i <=$tgl_akhir ; $i++) {
+			$jum_jadwl=$jum++;
+			$tanggal[$tgl++]=$i;
+		}
+
+		for ($i=0; $i <$jum_tot_kary ; $i++) {
+
+			$kd_karyawan[$i]=$this->input->post('nama_karya3-'.$i);
+
+		}
+		// untuk memfilter data array yang kosong kemudian dicek unique data yang kembar akan di hilangkan
+				$filter=array_filter($kd_karyawan);
+			if(count(array_unique($filter))<count($filter)){
+				$this->session->set_userdata('cekWaktu','gagal');
+				redirect('nex_page/jadwal');
+			}
+		else {
+
+			for ($i=0; $i <$jum_tot_kary ; $i++) {
+			if(!empty($kd_karyawan[$i])){
+				$jdwl_row=1;
+			for ($j=1; $j <=$jum_jadwl ; $j++) {
+				$jdwl_name=$jdwl_row++;
+				if ($jdwl_name>7) {
+					$jdwl_row=1;
+						$jdwl_name=1;
+				}
+				$jadwal_karyawan[$i][$j]=$this->input->post("jadwl-A-".$i."-".$jdwl_name);
+					// untuk mencari kode jadwal dan kde waktu
+					if($jadwal_karyawan[$i][$j]=="Pagi"){
+						$jam_jdwl="06:00-16:00";
+					}elseif($jadwal_karyawan[$i][$j]=="Lembur"){
+						$jam_jdwl="16:00-06:00";
+					}elseif($jadwal_karyawan[$i][$j]=="Siang"){
+						$jam_jdwl="14:00-24:00";
+					}elseif($jadwal_karyawan[$i][$j]=="Libur"){
+						$jam_jdwl="--:--";
+					}
+				//$kd_jadwal=$this->crud_j->cari_kode_jadwal();
+				 // $kd_kar[$i]=$this->input->post('nama_karya-'.$i);
+				 $kd=implode(" ",$kd_karyawan);
+					$cek_kd_jdwll=$this->crud_j->cari_jadwal_kar($kd_karyawan[$i],$tanggal[$j],$bulan,$tahun)->result();
+					if($cek_kd_jdwll>0){
+						 $kode_waktu='-';
+					foreach ($cek_kd_jdwll as $kd_jdwl) {
+						$kode_waktu=$kd_jdwl->kd_waktu;
+					}
+
+					$data_tbWaktu=array(
+						'jadwal'=>$jadwal_karyawan[$i][$j],
+						'jam'=>$jam_jdwl
+					);
+
+					$id_waktu=array(
+						'kd_waktu'=>$kode_waktu
+					);
+								//  $this->crud_j->input_data($data_waktu[$i],'tb_waktuu');
+							$this->crud_j->edit_jadwal($id_waktu,$data_tbWaktu);
+							$cek_inptan=1;
+
+
+
+			} else {
+
+			}
+		}
+		}
+	}
+
+	}
+	print_r($jadwal_karyawan);
+	echo "</br>";
+	print_r ($kd_karyawan);
+	echo "</br>";
+	print_r($tanggal);
+	echo "</br>";
+	echo $bulan;
+	echo "</br>";
+	echo $tahun;
+	echo "</br>";
+	echo $jam_jdwl;
+	echo "</br>";
+	print_r ($kode_waktu);
+	if ($cek_inptan==0) {
+		$this->session->set_userdata('cekWaktu','gagal');
+		redirect('nex_page/jadwal');
+	}else {
+		// echo count(array_unique($kd_karyawan));
+		//  $this->session->set_userdata('cekWaktu','berhasil');
+		//  redirect('nex_page/jadwal');
+	}
+}
+}
   // untuk mengedit data jadwal
 	function edit_jadwal(){
-		$kd_kar=$this->input->post('kd_karyawan');
+
 		$tanggal=$this->input->post('tanggal');
 		$bulan=$this->input->post('bulan');
 		$tahun=$this->input->post('tahun');
-		$waktu=$this->input->post('waktu');
-		$cek_kd_jdwl=$this->crud_j->cari_jadwal_kar($kd_kar,$tanggal,$bulan,$tahun)->result();
-		if (empty($kd_kar)||empty($tanggal)||empty($bulan)||empty($tahun)) {
+		$jml_edit=$this->input->post('jml_edit');
+
+
+		if (empty($jml_edit)||empty($tanggal)||empty($bulan)||empty($tahun)) {
 			$this->session->set_userdata('edit_jadwal','gagal');
 			redirect('nex_page/jadwal');
-		}
-		if($cek_kd_jdwl>0){
-			 $kode_jadwl='';
-			foreach ($cek_kd_jdwl as $kd_jdwl) {
-				$kode_jadwl=$kd_jdwl->kd_jdwl;
+		}else{
+			for ($i=0; $i <$jml_edit ; $i++) {
+				$kd_kar[$i]=$this->input->post('nama_karya2-'.$i);
+				$jadwal_kar[$i]=$this->input->post('jadwll-A-'.$i.'-0');
+				$cek_kd_jdwl=$this->crud_j->cari_jadwal_kar($kd_kar[$i],$tanggal,$bulan,$tahun)->result();
+
+				if($cek_kd_jdwl>0){
+					 $kode_waktu='';
+
+					foreach ($cek_kd_jdwl as $kd_jdwl) {
+						$kode_waktu=$kd_jdwl->kd_waktu;
+					}
+
+
+					$jam='';
+					if($jadwal_kar[$i]=="Pagi"){
+						$jam="06:00-16:00";
+					}elseif ($jadwal_kar[$i]=="Siang") {
+						$jam="16:00-06:00";
+					}elseif ($jadwal_kar[$i]=="Lembur") {
+						$jam="16:00-06:00";
+					}elseif ($jadwal_kar[$i]=="Libur") {
+						$jam="--:--";
+					}
+
+					$data_tbWaktu=array(
+						'jadwal'=>$jadwal_kar[$i],
+						'jam'=>$jam
+					);
+
+					$id_waktu=array(
+						'kd_waktu'=>$kode_waktu
+					);
+					$this->crud_j->edit_jadwal($id_waktu,$data_tbWaktu);
+				//	$this->crud_j->edit_jadwal($id_jadwal,$data_tbjadwal);
+
+				}else {
+					// $this->session->set_userdata('edit_jadwal','gagal');
+					// redirect('nex_page/jadwal');
+				}
 			}
-
-			$data=array(
-			'kd_kar'=>$kd_kar,
-			'jadwal'=>$waktu,
-			'tanggal'=>$tanggal,
-			'bulan'=>$bulan,
-			'tahun'=>$tahun);
-
-			$where=array(
-				'kd_jdwl'=>$kode_jadwl
-			);
-
-			$this->crud_j->edit_jadwal($where,$data);
 			$this->session->set_userdata('edit_jadwal','berhasil');
 			redirect('nex_page/jadwal');
-		}else {
-			$this->session->set_userdata('edit_jadwal','gagal');
-			redirect('nex_page/jadwal');
 		}
+		print_r($jadwal_kar);
+		echo "<br>";
+		print_r($kd_kar);
+
 	}
 // untuk menghapus jadwal
 	function hapus_jadwal(){
 		$kd_kar=$this->input->post('kd_kary');
-		$tanggal=$this->input->post('tanggal');
-		$bulan=$this->input->post('bulan');
-		$tahun=$this->input->post('tahun');
-		$waktu=$this->input->post('waktu');
-		$cek_kd_jdwl=$this->crud_j->cari_jadwal_kar($kd_kar,$tanggal,$bulan,$tahun)->result();
-		if (empty($kd_kar)||empty($tanggal)||empty($bulan)||empty($tahun)) {
-			$this->session->set_userdata('edit_jadwal','gagal');
-			redirect('nex_page/jadwal');
-		}
-		if($cek_kd_jdwl>0){
-			 $kode_jadwl='';
-			foreach ($cek_kd_jdwl as $kd_jdwl) {
-				$kode_jadwl=$kd_jdwl->kd_jdwl;
-			}
 
-			$where=array(
-				'kd_jdwl'=>$kode_jadwl
-			);
+		if (!empty($kd_kar)) {
 
-			$this->crud_j->hapus_data_jadwal($where,'tv_jadwal');
-			$this->session->set_userdata('hapus_jadwal','berhasil');
-			redirect('nex_page/jadwal');
+			$this->crud_j->hapus_semua_jadwal();
+			// $this->session->set_userdata('hapus_jadwal','berhasil');
+			// redirect('nex_page/jadwal');
 		}else {
 			$this->session->set_userdata('hapus_jadwal','gagal');
 			redirect('nex_page/jadwal');
 		}
 	}
+	// untuk menghapus jadwal
+		function hapus_jadwal_2(){
+			$kd_kar=$this->input->post('kd_kary');
+
+			if (!empty($kd_kar)) {
+				$where=array(
+					'kd_kar'=>$kd_kar
+				);
+				$this->crud_j->hapus_data_jadwal($where,'tv_jadwal');
+			//	$this->session->set_userdata('hapus_jadwal','berhasil');
+			//	redirect('nex_page/jadwal');
+			}else {
+				$this->session->set_userdata('hapus_jadwal','gagal');
+				redirect('nex_page/jadwal');
+			}
+		}
 // untuk mencari bulan pada modal edit dan hapus
 	function edit_bulan(){
 		$tahun=$this->input->post('tahun');
@@ -293,14 +466,15 @@ function edit_pegawai(){
 			}
 			echo json_encode($select_box);
 		}
+
 	}
 // untuk mencari tanggal pada modal edit dan hapus
 	function edit_tanggal(){
-		$kd_kary=$this->input->post('kd_kar');
+		// $kd_kary=$this->input->post('kd_kar');
 		$bulan=$this->input->post('bulan');
 		 $tahun=$this->input->post('tahun');
 
-		 $tanggl=$this->crud_j->tanggal_cari($kd_kary,$bulan,$tahun);
+		 $tanggl=$this->crud_j->tanggal_cari2($bulan,$tahun);
 		if (count($tanggl)>0) {
 			$select_box='';
 			$select_box .='<option value="">---Pilih Tanggal---</option>';
@@ -314,22 +488,37 @@ function edit_pegawai(){
 	}
 // untuk mencari jadwal pada modal edit dan hapus
 	function edit_waktu(){
-		$kd_kary=$this->input->post('kd_kar');
+
 		$bulan=$this->input->post('bulan');
 		 $tahun=$this->input->post('tahun');
 		 $tanggal=$this->input->post('tanggal');
-		 $jadwal=$this->crud_j->cari_jadwal_kar($kd_kary,$tanggal,$bulan,$tahun)->result();
+		 $jadwal=$this->crud_j->cari_jadwal_kar2($tanggal,$bulan,$tahun)->result();
 		if (count($jadwal)>0) {
-			$select_box='';
+			$select_box.="";
+			$i=0;
+			$j=0;
+			$DataWaktu=array();
+			$kd_waktu=array();
 			foreach ($jadwal as $jdwl) {
-				$select_box .='<option value="'.$jdwl->jadwal.'">'.$jdwl->jadwal.'</option>';
+				$kd_waktu[$j++]=$jdwl->kd_waktu;
+				$kd_kar[$i++]=$jdwl->kd_kar;
 
 			}
-			$select_box .='<option value="Pagi">Pagi</option>';
-			$select_box .='<option value="Siang">Siang</option>';
-			$select_box .='<option value="Lembur">Lembur</option>';
-			$select_box .='<option value="Libur">Libur</option>';
-			echo json_encode($select_box);
+			for ($i=0; $i <$j ; $i++) {
+			$DataWaktu[$i][0]=$this->crud_j->cari_tbWaktu($kd_waktu[$i])->result();
+			$DataWaktu[$i][1]=$this->crud_j->cari_nama_karyawan($kd_kar[$i])->result();
+			// foreach ($DataWaktu as $waktu) {
+			// 	$select_box .='<option value="'.$waktu->jadwal.'">'.$waktu->jadwal.'</option>';
+			// 	$select_box .='<option value="Siang">Siang</option>';
+			// 	$select_box.='<option value="Lembur">Lembur</option>';
+			// 	$select_box .='<option value="Libur">Libur</option>';
+			//
+			// }
+
+
+			}
+
+			echo json_encode($DataWaktu);
 		}
 
 	}
@@ -441,7 +630,7 @@ function edit_pegawai(){
 		);
     $excel->setActiveSheetIndex(0)->setCellValue('A1', "JADWAL DRIVER OPERSiONAL"); // Set kolom A1 dengan tulisan "DATA SISWA"
 		$excel->setActiveSheetIndex(0)->setCellValue('A2', "CV. JOGJATRANSPORT REST CAR"); // Set kolom A1 dengan tulisan "DATA SISWA"
-		$excel->setActiveSheetIndex(0)->setCellValue('A3', "Periode"); // Set kolom A1 dengan tulisan "DATA SISWA"
+		$excel->setActiveSheetIndex(0)->setCellValue('A3', "Periode ".$bulan." ".$tahun); // Set kolom A1 dengan tulisan "DATA SISWA"
     $excel->getActiveSheet()->mergeCells('A1:I1'); // Set Merge Cell pada kolom A1 sampai E1
 		$excel->getActiveSheet()->mergeCells('A2:I2'); // Set Merge Cell pada kolom A1 sampai E1
 		$excel->getActiveSheet()->mergeCells('A3:I3'); // Set Merge Cell pada kolom A1 sampai E1
@@ -455,13 +644,7 @@ function edit_pegawai(){
 		$excel->getActiveSheet()->getStyle('A2')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER); // Set text center untuk kolom A1
 		$excel->getActiveSheet()->getStyle('A3')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER); // Set text center untuk kolom A1
 
-    // Buat header tabel nya pada baris ke 3
-    $excel->setActiveSheetIndex(0)->setCellValue('A4', "NO"); // Set kolom A3 dengan tulisan "NO"
-		$excel->getActiveSheet()->mergeCells('A4:A5'); // Set Merge Cell pada kolom A1 sampai E1
-    $excel->setActiveSheetIndex(0)->setCellValue('B4', "Nama"); // Set kolom B3 dengan tulisan "NIS"
-		$excel->getActiveSheet()->mergeCells('B4:B5'); // Set Merge Cell pada kolom A1 sampai E1
 
-		$excel->getActiveSheet()->getColumnDimension('B')->setWidth('30');
 		//styling
 		// $excel->getActiveSheet()->getStyle('B4')->applyFromArray(
 		// 	array(
@@ -482,23 +665,31 @@ function edit_pegawai(){
 			)
 		);
     // borders
-		$numrow = 6; // Set baris pertama untuk isi tabel adalah baris ke 4
-		$excel->getActiveSheet()->getStyle('A4:A5'.($numrow-1))->applyFromArray(
+
+		$excel->getActiveSheet()->getStyle('A4:A5'.(5))->applyFromArray(
 			array(
 				'borders'=>array(
 					'outline'
 				)
 			)
 		);
-    // Apply style header yang telah kita buat tadi ke masing-masing kolom header
-    $excel->getActiveSheet()->getStyle('A4')->applyFromArray($style_col);
-    $excel->getActiveSheet()->getStyle('B4')->applyFromArray($style_col);
-    $excel->getActiveSheet()->getStyle('C4')->applyFromArray($style_col);
-    $excel->getActiveSheet()->getStyle('D4')->applyFromArray($style_col);
-    $excel->getActiveSheet()->getStyle('E4')->applyFromArray($style_col);
+
     // Panggil function view yang ada di SiswaModel untuk menampilkan semua data siswanya
 
 		// ----------------------------------------------------------
+		$jad_jum=1;
+		for ($i=$tgl_awl; $i <=$tgl_akhr ; $i++) {
+		$jum_semua_jad=$jad_jum++;
+		}
+		if($jum_semua_jad>7){
+			// floor pembulatan nilai kebawah
+			$jadwl_jum=floor($jum_semua_jad/7);
+			$sisa_jum_jadwl=$jum_semua_jad%7;
+			if ($sisa_jum_jadwl>0) {
+				$jadwl_jum=$jadwl_jum+1;
+			}
+		}
+
 
 		 // mencari kode karyawan di tabel jadwal
 		 $kar=0;
@@ -535,21 +726,13 @@ function edit_pegawai(){
 		 $jum_jadwl=$jum++;
 		 $tanggal[$tgl++]=$i;
 	 }
-	 $jum_tabl_tgl=$jum_jadwl;
- 	if ($jum_tabl_tgl>7) {
- 		$jum_tabl_tgl=7;
- 	}elseif ($jum_tabl_tgl<7) {
- 		$jum_tabl_tgl=$jum_jadwl;
- 	}elseif (empty($jum_tabl_tgl)) {
- 		$jum_tabl_tgl=1;
- 	}
+
 
 
 
 
     // untuk tanggal menampilkan tanggal
-		$row_tgl=4;
-		$row_hri=5;
+
 		$jum_row=$jum_jadwl;
 		if($jum_row>7){
 			$jum_row=7;
@@ -583,7 +766,7 @@ function edit_pegawai(){
 
 		//$tahun= Date("Y");
 		//$bulan= Date("n");
-		for($i=0;$i<$jum_row;$i++){
+		for($i=0;$i<$jum_jadwl;$i++){
 			$time[$i] = date('D',mktime(0,0,0,$bulanList[$bulan],$tanggal[$i],$tahun));
 		 // $hari[$i]=date("D", $time[$i]);
 		 $data_hari[$i]=$dayList[$time[$i]];
@@ -603,55 +786,135 @@ function edit_pegawai(){
 		//  $jum_tgl=$jum_tanggal;
 	 // }
 	 for ($i=0; $i <$jum_kd_kar ; $i++) {
-		 for ($j=0; $j <$jum_tabl_tgl ; $j++) {
+		 for ($j=0; $j <$jum_jadwl ; $j++) {
 			 $jadwal=$this->crud_j->cari_jadwal_kar($kd_kary[$i],$tanggal[$j],$bulan,$tahun)->result();
-			 foreach ($jadwal as $jadwl_pgw) {
-				 $jadwal_pgw[$i][$j]=$jadwl_pgw->jadwal;
-				 if (empty($jadwal_pgw[$i][$j])) {
-					$jadwal_pgw="-";
+			 foreach ($jadwal as $jadwl_kd) {
+				 $kd_jadwal_pgw[$i][$j]=$jadwl_kd->kd_waktu;
+
+				}
+				$jadwal_wkt=$this->crud_j->cari_jadwal_jam($kd_jadwal_pgw[$i][$j])->result();
+				foreach ($jadwal_wkt as $jadwl_pgw) {
+					$jadwal_pgw[$i][$j]=$jadwl_pgw->jadwal;
+					$jam_jadwal[$i][$j]=$jadwl_pgw->jam;
+ 				 if (empty($jadwal_pgw[$i][$j])) {
+ 					$jadwal_pgw="-";
 				}
 			 }
 		 }
 	 }
 
 
+ $numrow = 6; // Set baris pertama untuk isi tabel adalah baris ke 4
+
+ $numb=4;
+ $numb2=5;
+ $cell=0;
+
+ $yy=0;
+ $ll=0;
+ $nm=0;
+
+
+
+ // Buat header tabel nya pada baris ke 3
+ // $excel->setActiveSheetIndex(0)->setCellValue('A'.$b, "NO"); // Set kolom A3 dengan tulisan "NO"
+ // $excel->getActiveSheet()->mergeCells('A'.$b.':A'.$a); // Set Merge Cell pada kolom A1 sampai E1
+ // $excel->setActiveSheetIndex(0)->setCellValue('B'.$b, "Nama"); // Set kolom B3 dengan tulisan "NIS"
+ // $excel->getActiveSheet()->mergeCells('B'.$b.':B'.$a); // Set Merge Cell pada kolom A1 sampai E1
+
+ $excel->getActiveSheet()->getColumnDimension('B')->setWidth('30');
+
+// $excel->getActiveSheet()->getColumnDimension('C7')->setHeight('30');
+ // $jadwl_jum
+	 for ($u=0; $u <$jadwl_jum; $u++) {
+
+
 	 // untuk menampilkan nama karyawan
+	 $dat=$cell;
+	 if ($dat>0) {
+	 	$numrow=$numrow+4;
+		$numb=$numrow-2;
+ 	 $numb2=$numrow-1;
+	 }
 	 $no=1;
+	 // untuk menampilkan tanggal
+	 $row_tgl=4;
+	 $row_hri=5;
+	 $row_karwn=1;
+	 $jum_tabl_tgl=$jum_tabl_tgl+7;
+
+
+
+	 $excel->setActiveSheetIndex(0)->setCellValue('A'.$numb, "NO"); // Set kolom A3 dengan tulisan "NO"
+	 $excel->getActiveSheet()->mergeCells('A'.$numb.':A'.$numb2); // Set Merge Cell pada kolom A1 sampai E1
+	 $excel->setActiveSheetIndex(0)->setCellValue('B'.$numb, "NAMA"); // Set kolom B3 dengan tulisan "NIS"
+	 $excel->getActiveSheet()->mergeCells('B'.$numb.':B'.$numb2); // Set Merge Cell pada kolom A1 sampai E1
+	 // header// Apply style header yang telah kita buat tadi ke masing-masing kolom header
+	 $excel->getActiveSheet()->getStyle('A'.$numb)->applyFromArray($style_col);
+	 $excel->getActiveSheet()->getStyle('B'.$numb)->applyFromArray($style_col);
+ 	 $excel->getActiveSheet()->getStyle('C'.$numb)->applyFromArray($style_col);
+ 	 $excel->getActiveSheet()->getStyle('D'.$numb)->applyFromArray($style_col);
+ 	 $excel->getActiveSheet()->getStyle('E'.$numb)->applyFromArray($style_col);
+ 	 $excel->getActiveSheet()->getStyle('F'.$numb)->applyFromArray($style_col);
+ 	 $excel->getActiveSheet()->getStyle('G'.$numb)->applyFromArray($style_col);
+ 	 $excel->getActiveSheet()->getStyle('H'.$numb)->applyFromArray($style_col);
+ 	 $excel->getActiveSheet()->getStyle('I'.$numb)->applyFromArray($style_col);
+
+
+// tanggal
+	 for ($i=0; $i <$jum_row ; $i++) {
+
+		 $rowCelltgl=$rowCellList[$i].$numb;
+		 $rowCellhri=$rowCellList[$i].$numb2;
+		 $excel->setActiveSheetIndex(0)->setCellValue($rowCelltgl, $tanggal[$yy++]);
+		 $excel->getActiveSheet()->getStyle($rowCelltgl)->applyFromArray($style_row);
+
+		 $excel->setActiveSheetIndex(0)->setCellValue($rowCellhri, $data_hari[$ll++]);
+		 $excel->getActiveSheet()->getStyle($rowCellhri)->applyFromArray($style_row);
+	 }
+
+// mrnampilkan nama karyawan
 	 for ($i=0; $i <$jum_kd_kar ; $i++) {
 		 $cell=$numrow++;
+
+
 		 $excel->setActiveSheetIndex(0)->setCellValue('A'.$cell, $no++);
 		 $excel->setActiveSheetIndex(0)->setCellValue('B'.$cell, $nam_karya[$i]);
 
 		 // Apply style row yang telah kita buat tadi ke masing-masing baris (isi tabel)
 		 $excel->getActiveSheet()->getStyle('A'.$cell)->applyFromArray($style_row);
 		 $excel->getActiveSheet()->getStyle('B'.$cell)->applyFromArray($style_row);
+
+		 // menampilkan jadwal
+		 $row=0;
+		 for ($j=$nm; $j <$jum_tabl_tgl ; $j++) {
+			 $rowCelljdwl=$rowCellList[$row++].$cell;
+			 $jadwall=$jadwal_pgw[$i][$j];
+			 $jam_jadwall=	$jam_jadwal[$i][$j];
+			 if (empty($jadwall)) {
+				 $jadwall= '';
+			 }elseif (empty($jam_jadwall)) {
+			 	$jam_jadwall=" ";
+			 }
+			 $excel->setActiveSheetIndex(0)->setCellValue($rowCelljdwl,$jadwall);
+			 $excel->getActiveSheet()->getStyle($rowCelljdwl)->applyFromArray($style_row);
+
+		 }
+
+
 	 }
-// untuk menampilkan tanggal
-		for ($i=0; $i <$jum_row ; $i++) {
-			$rowCelltgl=$rowCellList[$i].$row_tgl;
-			$rowCellhri=$rowCellList[$i].$row_hri;
-			$excel->setActiveSheetIndex(0)->setCellValue($rowCelltgl, $tanggal[$i]);
-			$excel->getActiveSheet()->getStyle($rowCelltgl)->applyFromArray($style_row);
+	 $nm=$nm+7;
 
-			$excel->setActiveSheetIndex(0)->setCellValue($rowCellhri, $data_hari[$i]);
-			$excel->getActiveSheet()->getStyle($rowCellhri)->applyFromArray($style_row);
-		}
-		$row_jdwl=6;
-		$row_karwn=1;
-		$satu=0;
-		for ($i=0; $i <$jum_kd_kar ; $i++) {
-			$satu=$row_jdwl++;
-			for ($j=0; $j <$jum_tabl_tgl ; $j++) {
-				$rowCelljdwl=$rowCellList[$j].$satu;
-				$jadwall=$jadwal_pgw[$i][$j];
-				if (empty($jadwall)) {
-					$jadwall= '';
-				}
-				$excel->setActiveSheetIndex(0)->setCellValue($rowCelljdwl,$jadwall );
-				$excel->getActiveSheet()->getStyle($rowCelljdwl)->applyFromArray($style_row);
+	 }
+	 // contoh
+	  //$excel->setActiveSheetIndex(0)->setCellValue('B'.'20', $cell);
+		// $excel->setActiveSheetIndex(0)->setCellValue('B'.'21', $sisa_jum_jadwl);
 
-			}
-		}
+
+
+
+
+
 
 		// foreach ($data_j as $data) {
     //
@@ -675,7 +938,7 @@ function edit_pegawai(){
 
 
     // Set height semua kolom menjadi auto (mengikuti height isi dari kolommnya, jadi otomatis)
-    $excel->getActiveSheet()->getDefaultRowDimension()->setRowHeight(-1);
+    $excel->getActiveSheet()->getDefaultRowDimension()->setRowHeight("20");
     // Set orientasi kertas jadi LANDSCAPE
     $excel->getActiveSheet()->getPageSetup()->setOrientation(PHPExcel_Worksheet_PageSetup::ORIENTATION_LANDSCAPE);
     // Set judul file excel nya

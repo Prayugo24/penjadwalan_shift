@@ -45,6 +45,43 @@
                           </div>
                       </div>
                   </div>
+									<div class="row">
+                      <div class="col-md-4">
+                          <div class="form-group">
+                              <label>Status Perkawinan</label>
+                              <select class="form-control" name="stts_prkwnan" required value="<?php echo $pegawaii->status_perkawinan; ?>">
+                                <option>Kawin</option>
+                                <option>Belum Kawin</option>
+																<option>Duda</option>
+																<option>Janda</option>
+                              </select>
+                          </div>
+                      </div>
+                      <div class="col-md-8">
+                          <div class="form-group">
+                              <label>Alamat</label>
+                              <textarea name="alamat" required rows="8" class="form-control border-input" cols="80"><?php echo $pegawaii->alamat; ?></textarea>
+                          </div>
+                      </div>
+                  </div>
+									<div class="row">
+                      <div class="col-md-4">
+                          <div class="form-group">
+                              <label>Tanggal lahir</label>
+                              <input required type="date" name="tgl_lhr"  class="form-control border-input" value="<?php echo $pegawaii->tgl_lahir; ?>">
+                          </div>
+                      </div>
+                      <div class="col-md-8">
+                          <div class="form-group">
+                              <label>Status Kerja</label>
+															<select class="form-control" name="stts_kerja" required value="<?php echo $pegawaii->status_kerja; ?>">
+                                <option>Kontrak</option>
+                                <option>Tetap</option>
+																<option>Training</option>
+                              </select>
+                          </div>
+                      </div>
+                  </div>
 									<!-- status -->
 									<input type="hidden" name="status" value="Actif">
                   <!-- <div class="row">
@@ -59,7 +96,7 @@
                       </div>
                   </div> -->
                   <div class="text-center">
-                      <button type="submit" class="btn btn-warning btn-fill btn-wd">Edit Data</button>
+                      <button type="submit" class="btn btn-warning btn-fill btn-wd">Simpan Data</button>
                   </div>
                   <div class="clearfix"></div>
               </form>

@@ -33,6 +33,10 @@
                   <th class="info"><b>jenis Kelamin</b></th>
                   <th class="info"><b>No Hp</b></th>
                   <th class="info"><b>Status</b></th>
+                  <th class="info"><b>Alamat</b></th>
+                  <th class="info"><b>Status Kerja</b></th>
+                  <th class="info"><b>Tanggal lahir</b></th>
+                  <th class="info"><b>Status Perkawinan</b></th>
                   <th class="info"><b>Replace</b></th>
                 </tr>
               </thead>
@@ -49,6 +53,10 @@
                   <td><?php echo $pegawai->jns_kel; ?></td>
                   <td><?php echo $pegawai->no_hp; ?></td>
                   <td><?php echo $pegawai->status; ?></td>
+                  <td><?php echo $pegawai->alamat; ?></td>
+                  <td><?php echo $pegawai->status_kerja; ?></td>
+                  <td><?php echo $pegawai->tgl_lahir; ?></td>
+                  <td><?php echo $pegawai->status_perkawinan; ?></td>
                   <?php $data=$pegawai->kd_kar; ?>
                   <td><button class="btn btn-warning btn-fill" onclick="modal_edit_pegawai('<?php echo $data;?>')">
 

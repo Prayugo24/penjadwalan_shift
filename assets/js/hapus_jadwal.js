@@ -1,105 +1,73 @@
-$(document).ready(function() {
-  $('#nama_kary').change(function(){
-    var nam_kar=$(this).val();
+function Swall_DeleteJad(kd_kar){
+//  var kd_kary=kd_kar;
+  // alert('error hapus'+kd_kary);
 
+  var base_url2='/kp/codeigneter/index.php/Admin/crud/';
+swal({
+  title: "Anda Yakin?",
+  text: "Data Yang Sudah Terhapus Tidak Bisa Dikembalikan Lagi!",
+  icon: "warning",
+  buttons: true,
+  dangerMode: true,
 
-
-  if (nam_kar=='') {
-    $('#tahn').prop('disabled',true);
-  }else {
-    $('#tahn').prop('disabled',false);
-
-        $('#kd_kary').val( $(this).find('option:selected').data('info') );
-  }
-});
-});
-
-$(document).ready(function(){
-  $('#tahn').on('change',function(){
-
-    var tahun=$(this).val();
-    var base_url2='/website/kp/codeigneter/index.php/Admin/crud/';
-    if (tahun=='') {
-      $('#buln').prop('disabled',true);
-    }else {
-      $('#buln').prop('disabled',false);
+})
+.then((willDelete) => {
+  if (willDelete) {
       $.ajax({
-        url: base_url2+"edit_bulan",
+        url:base_url2+"hapus_jadwal_2",
         type:"POST",
-        data:{'tahun': tahun},
-        dataType:'json',
-        success:function(data){
-          $('#buln').html(data);
+        data:{'kd_kary':kd_kar},
+
+        success:function(){
+          swal("Terhapus!", "Data Berhasil Dihapus.", {
+            icon: "success",
+          });
+          window.location.reload();
         },
         error:function(){
-          alert('error bulan');
+          alert('error hapus');
         }
 
       });
-    }
-  });
-  });
 
-  $(document).ready(function(){
-    $('#buln').on('change',function(){
+  } else {
+    swal("Cancelled", "Data Tidak Jadi Dihapus");
+  }
+});
+}
 
-      var bulan=$("#buln").val();
-      var tahun=$('#tahn').val();
-      var kd_kar=$('#kd_kary').val();
-      var base_url2='/website/kp/codeigneter/index.php/Admin/crud/';
-      if (bulan=='') {
-        $('#tanggl').prop('disabled',true);
-      }else {
-        $('#tanggl').prop('disabled',false);
+function _Deletejadwal(){
+  kd_kar="00";
+    var base_url2='/kp/codeigneter/index.php/Admin/crud/';
+  swal({
+    title: "Anda Yakin?",
+    text: "Data Yang Sudah Terhapus Tidak Bisa Dikembalikan Lagi!",
+    icon: "warning",
+    buttons: true,
+    dangerMode: true,
+
+  })
+  .then((willDelete) => {
+    if (willDelete) {
         $.ajax({
-          url:base_url2+"edit_tanggal",
+          url:base_url2+"hapus_jadwal",
           type:"POST",
-          data:{'bulan':bulan,
-                'tahun':tahun,
-                'kd_kar':kd_kar},
-          dataType:'json',
-          success:function(data){
+          data:{'kd_kary':kd_kar},
 
-            $('#tanggl').html(data);
+          success:function(){
+            swal("Terhapus!", "Data Berhasil Dihapus.", {
+              icon: "success",
+            });
+            window.location.reload();
           },
-          error:function(data){
-            alert('error tanggl'+data);
+          error:function(){
+            alert('error hapus');
           }
 
         });
-      }
-    });
-    });
 
-    $(document).ready(function(){
-      $('#tanggl').on('change',function(){
-
-        var bulan=$("#buln").val();
-        var tahun=$('#tahn').val();
-        var kd_kar=$('#kd_kary').val();
-        var base_url2='/website/kp/codeigneter/index.php/Admin/crud/';
-        var tanggal=$(this).val();
-        if (tanggal=='') {
-          $('#wakt').prop('disabled',true);
-        }else {
-          $('#wakt').prop('disabled',true);
-          $.ajax({
-            url:base_url2+"edit_waktu",
-            type:"POST",
-            data:{'bulan':bulan,
-                  'tahun':tahun,
-                  'tanggal':tanggal,
-                  'kd_kar':kd_kar},
-            dataType:'json',
-            success:function(data){
-
-              $('#wakt').html(data);
-            },
-            error:function(data){
-              alert('error waktu'+data);
-            }
-
-          });
-        }
-      });
-      });
+    } else {
+      swal("Cancelled", "Data Tidak Jadi Dihapus");
+    }
+  });
+}

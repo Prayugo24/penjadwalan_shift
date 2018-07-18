@@ -1,9 +1,9 @@
 <!-- Modal info-->
 
 	<div id="myModalInfo" class="modal fade" role="dialog">
-		<div class="modal-dialog">
+		<div class="modal-dialog" style="width:45%;">
 			<!-- konten modal-->
-			<div class="modal-content"  >
+			<div class="modal-content" >
 				<!-- heading modal -->
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" onclick="closeModal()">&times;</button>
@@ -13,7 +13,7 @@
 				<div class="modal-body">
           <div class="content">
             <div class="row">
-              <div class="col-md-8 col-lg-8">
+              <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12">
                 <div class="table-responsive">
             <table class="table table-condensed text-centered order-table" style="text-align: center;">
               <thead>
